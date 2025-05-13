@@ -1,5 +1,5 @@
-import React from "react"
 import { Moon, Sun } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -7,9 +7,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useTheme } from "@/components/ui/ThemeProvider"
+import { useTheme } from "./ui/ThemeProvider"
 
-const ModeToggle: React.FC = () => {
+export function ModeToggle() {
   const { setTheme } = useTheme()
 
   return (
@@ -35,5 +35,3 @@ const ModeToggle: React.FC = () => {
     </DropdownMenu>
   )
 }
-
-export default ModeToggle
