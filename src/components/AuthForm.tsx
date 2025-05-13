@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { useNavigate } from 'react-router-dom'
 
 export function AuthForm() {
   const [email, setEmail] = useState('')
@@ -9,6 +10,8 @@ export function AuthForm() {
   const [loading, setLoading] = useState(false)
   const [isSignup, setIsSignup] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const navigate = useNavigate()
 
   const handleAuth = async () => {
     setLoading(true)
@@ -18,7 +21,11 @@ export function AuthForm() {
       ? await supabase.auth.signUp({ email, password })
       : await supabase.auth.signInWithPassword({ email, password })
 
-    if (error) setError(error.message)
+    if (error) {
+      setError(error.message)
+    } else {
+      navigate('/dashboard')
+    }
 
     setLoading(false)
   }
