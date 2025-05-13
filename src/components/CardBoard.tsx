@@ -42,15 +42,34 @@ export function CardBoard() {
 
   const addCard = async () => {
     if (!newCardText.trim()) return
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) {
+      console.error('Unable to get current user:', userError)
+      return
+    }
+
     const { data, error } = await supabase
       .from('cards')
-      .insert([{ content: newCardText.trim(), column: 'todo' }])
+      .insert([
+        {
+          content: newCardText.trim(),
+          column: 'todo',
+          user_id: user.id, // <-- Add user_id for RLS
+        },
+      ])
       .select()
       .single()
 
     if (!error && data) {
       setCards((prev) => [data, ...prev])
       setNewCardText('')
+    } else {
+      console.error('Error inserting card:', error)
     }
   }
 
@@ -58,6 +77,8 @@ export function CardBoard() {
     const { error } = await supabase.from('cards').delete().eq('id', id)
     if (!error) {
       setCards((prev) => prev.filter((card) => card.id !== id))
+    } else {
+      console.error('Delete failed:', error)
     }
   }
 
@@ -89,12 +110,12 @@ export function CardBoard() {
       .eq('id', cardId)
 
     if (error) {
+      console.error('Error updating card:', error)
       setCards((prevCards) =>
         prevCards.map((card) =>
           card.id === cardId ? { ...card, column: oldColumn } : card
         )
       )
-      console.error('Error updating card:', error)
     }
   }
 
