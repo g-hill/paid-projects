@@ -42,19 +42,31 @@ export function CardBoard() {
     getCurrentUser();
   }, []);
 
-  const fetchCards = async () => {
-    const { data, error } = await supabase
-      .from("cards")
-      .select("*")
-      .order("created_at", { ascending: false });
+const fetchCards = async () => {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
 
-    if (!error && data) {
-      console.log("Cards fetched from Supabase:", data);
-      setCards(data);
-    } else {
-      console.error("Error fetching cards:", error);
-    }
-  };
+  if (userError || !user) {
+    console.error("Unable to get current user:", userError);
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("cards")
+    .select("*")
+    .eq("user_id", user.id) // defensively filter by current user
+    .order("created_at", { ascending: false });
+
+  if (!error && data) {
+    console.log("Cards fetched for user:", user.id, data);
+    setCards(data);
+  } else {
+    console.error("Error fetching cards:", error);
+  }
+};
+
 
   const addCard = async () => {
     if (!newCardText.trim()) return;
