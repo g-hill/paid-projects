@@ -31,19 +31,21 @@ export function ThemeProvider({
   )
 
   useEffect(() => {
-    const root = document.documentElement
+    const root = window.document.documentElement
 
     root.classList.remove("light", "dark")
 
-    let appliedTheme = theme
-
     if (theme === "system") {
-      appliedTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
         ? "dark"
         : "light"
+
+      root.classList.add(systemTheme)
+      return
     }
 
-    root.classList.add(appliedTheme)
+    root.classList.add(theme)
   }, [theme])
 
   const value = {
