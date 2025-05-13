@@ -1,4 +1,3 @@
-// src/components/TopNav.tsx
 "use client"
 
 import * as React from "react"
@@ -10,10 +9,11 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
+import { useNavigate } from "react-router-dom"
+import { supabase } from "@/lib/supabase"
 
-const components: { title: string; href: string; description: string }[] = [
+const components = [
   {
     title: "Alert Dialog",
     href: "/docs/primitives/alert-dialog",
@@ -52,6 +52,17 @@ const components: { title: string; href: string; description: string }[] = [
 ]
 
 export const TopNav: React.FC = () => {
+  const navigate = useNavigate() 
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error("Logout failed:", error.message)
+      return
+    }
+    navigate("/login") 
+  }
+
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -70,9 +81,7 @@ export const TopNav: React.FC = () => {
                       shadcn/ui
                     </div>
                     <p className="text-sm leading-tight text-muted-foreground">
-                      Beautifully designed components that you can copy and
-                      paste into your apps. Accessible. Customizable. Open
-                      Source.
+                      Beautifully designed components that you can copy and paste into your apps. Accessible. Customizable. Open Source.
                     </p>
                   </a>
                 </NavigationMenuLink>
@@ -108,8 +117,12 @@ export const TopNav: React.FC = () => {
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-            Documentation
+          <NavigationMenuLink
+            role="button"
+            className="cursor-pointer px-4 py-2 hover:underline"
+            onClick={handleLogout}
+          >
+            Logout
           </NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
