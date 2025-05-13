@@ -7,7 +7,11 @@ import {
   type DragEndEvent,
 } from '@dnd-kit/core'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardAction,
+} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { supabase } from '../lib/supabase'
 import type { KanbanCard, ColumnType } from '../types/types'
@@ -60,43 +64,32 @@ export function CardBoard() {
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event
 
-    console.log('Active ID:', active.id)
-    console.log('Over ID:', over?.id)
-
-    // If no destination, return
     if (!over) return
 
     const cardId = active.id as string
     const destinationId = over.id as string
 
-    // Check if we're dropping on a column
     if (!destinationId.startsWith('column-')) return
 
     const newColumn = destinationId.replace('column-', '') as ColumnType
-
-    // Find the dragged card
     const draggedCard = cards.find((card) => card.id === cardId)
     if (!draggedCard || draggedCard.column === newColumn) return
 
-    // Store the old column for potential rollback
     const oldColumn = draggedCard.column
 
-    // Update local state first for immediate UI feedback
-    setCards((prevCards) => 
+    setCards((prevCards) =>
       prevCards.map((card) =>
         card.id === cardId ? { ...card, column: newColumn } : card
       )
     )
 
-    // Then update the database
     const { error } = await supabase
       .from('cards')
       .update({ column: newColumn })
       .eq('id', cardId)
 
-    // If error, revert the state using the functional update
     if (error) {
-      setCards((prevCards) => 
+      setCards((prevCards) =>
         prevCards.map((card) =>
           card.id === cardId ? { ...card, column: oldColumn } : card
         )
@@ -147,8 +140,8 @@ function KanbanColumn({
   cards: KanbanCard[]
   onDelete: (id: string) => void
 }) {
-  const { setNodeRef, isOver } = useDroppable({ 
-    id: `column-${id}` 
+  const { setNodeRef, isOver } = useDroppable({
+    id: `column-${id}`,
   })
 
   return (
@@ -173,11 +166,11 @@ function DraggableCard({
   card: KanbanCard
   onDelete: (id: string) => void
 }) {
-  const { 
-    attributes, 
-    listeners, 
-    setNodeRef, 
-    transform, 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
     isDragging,
   } = useDraggable({
     id: card.id,
@@ -192,24 +185,22 @@ function DraggableCard({
   }
 
   return (
-    <Card
-      ref={setNodeRef}
-      style={style}
-      className="p-3 bg-white shadow flex justify-between items-center"
-      {...listeners}
-      {...attributes}
-    >
-      <span className="select-none">{card.content}</span>
-      <Button
-        size="sm"
-        variant="destructive"
-        onClick={(e) => {
-          e.stopPropagation()
-          onDelete(card.id)
-        }}
-      >
-        ×
-      </Button>
+    <Card ref={setNodeRef} style={style} {...listeners} {...attributes}>
+      <CardContent className="flex justify-between items-center px-6 py-2">
+        <span className="select-none">{card.content}</span>
+        <CardAction>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete(card.id)
+            }}
+          >
+            ×
+          </Button>
+        </CardAction>
+      </CardContent>
     </Card>
   )
 }
