@@ -1,4 +1,4 @@
-@import "tailwind.config.js"
+@import "../tailwind.config.js"
 @import "tailwindcss/tailwind.css";
 @import "tw-animate-css";
 
