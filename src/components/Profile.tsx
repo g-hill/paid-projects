@@ -26,41 +26,41 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
+  const fetchProfile = async () => {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("Error fetching user", userError);
+      return;
+    }
+
+    setUserId(user.id);
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("Error loading profile", error);
+      return;
+    }
+
+    if (data) {
+      setRole(data.role || "");
+      setName(data.name || "");
+      setTitle(data.title || "");
+      setPersonalEmail(data.personal_email || "");
+      setCompanyEmail(data.company_email || "");
+      setNotes(data.notes || "");
+      setUrls(data.urls || [""]);
+    }
+  };
   useEffect(() => {
-    const fetchProfile = async () => {
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
-
-      if (userError || !user) {
-        console.error("Error fetching user", userError);
-        return;
-      }
-
-      setUserId(user.id);
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-
-      if (error && error.code !== "PGRST116") {
-        console.error("Error loading profile", error);
-        return;
-      }
-
-      if (data) {
-        setRole(data.role || "");
-        setName(data.name || "");
-        setTitle(data.title || "");
-        setPersonalEmail(data.personal_email || "");
-        setCompanyEmail(data.company_email || "");
-        setNotes(data.notes || "");
-        setUrls(data.urls || [""]);
-      }
-    };
 
     fetchProfile();
   }, []);
@@ -75,30 +75,33 @@ export default function Profile() {
     setUrls(updated);
   };
 
-  const handleSave = async () => {
-    if (!userId) return;
-    setLoading(true);
+const handleSave = async () => {
+  if (!userId) return;
+  setLoading(true);
 
-    const { error } = await supabase.from("profiles").upsert({
-      user_id: userId,
-      role,
-      name,
-      title,
-      personal_email: personalEmail,
-      company_email: companyEmail,
-      notes,
-      urls,
-      updated_at: new Date().toISOString(),
-    });
+  const { error } = await supabase.from("profiles").upsert({
+    user_id: userId,
+    role,
+    name,
+    title,
+    personal_email: personalEmail,
+    company_email: companyEmail,
+    notes,
+    urls,
+    updated_at: new Date().toISOString(),
+  }, {
+    onConflict: 'user_id'
+  });
 
-    setLoading(false);
+  setLoading(false);
 
-    if (error) {
-      console.error("Failed to update profile", error);
-    } else {
-      alert("Profile saved!");
-    }
-  };
+  if (error) {
+    console.error("Failed to update profile", error);
+  } else {
+    alert("Profile saved!");
+    await fetchProfile(); // <- refresh local state
+  }
+};
 
   return (
     <div className="flex flex-col h-screen">
