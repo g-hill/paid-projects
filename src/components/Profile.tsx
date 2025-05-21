@@ -111,11 +111,11 @@ const handleSave = async () => {
       <div className="flex flex-1 overflow-hidden">
         <SidebarNav />
 
-        <main className="flex-1 overflow-auto bg-muted/40 p-4 md:p-6">
+        <main className="flex-1 overflow-auto bg-muted/0 p-4 md:p-6">
           <div className="w-full max-w-4xl mx-auto space-y-6">
             <div>
-              <h1 className="text-3xl font-bold mb-1">My Profile</h1>
-              <p className="text-muted-foreground text-sm">
+              <h1 className="flex text-3xl font-bold mb-1">My Profile</h1>
+              <p className="flex text-muted-foreground text-sm">
                 Only the hiring team members will be able to see your profile
               </p>
             </div>
