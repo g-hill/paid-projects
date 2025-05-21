@@ -16,18 +16,23 @@ function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Routes>
+        {/* Public route */}
         <Route
-          path="/home"
-          element={user ? <Navigate to="/dashboard" /> : <AuthForm />}
+          path="/auth"
+          element={user ? <Navigate to="/home" /> : <AuthForm />}
         />
 
-        <Route element={user ? <SidebarLayout /> : <Navigate to="/home" />}>
+        {/* Protected routes */}
+        <Route
+          element={user ? <SidebarLayout /> : <Navigate to="/auth" />}
+        >
+          <Route path="/home" element={<Home />} />
           <Route path="/dashboard" element={<DashboardLayout />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/" element={<Navigate to="/dashboard" />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/home" />} />
+        {/* Default route */}
+        <Route path="*" element={<Navigate to={user ? "/home" : "/auth"} />} />
       </Routes>
     </ThemeProvider>
   );
