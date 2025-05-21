@@ -1,26 +1,50 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Home, Kanban } from 'lucide-react'
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Home, Kanban, User } from "lucide-react";
 
 export function SidebarNav() {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const navItems = [
+    { label: "Home", icon: Home, path: "/home" },
+    { label: "Board", icon: Kanban, path: "/dashboard" },
+    { label: "Profile", icon: User, path: "/profile" },
+  ];
 
   return (
-    <aside className={`transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} bg-background border-r`}>
+    <aside
+      className={`transition-all duration-300 ${
+        collapsed ? "w-16" : "w-64"
+      } bg-background border-r`}
+    >
       <div className="h-full flex flex-col p-4">
-        <Button variant="ghost" className="mb-4" onClick={() => setCollapsed(!collapsed)}>
-          {collapsed ? '→' : '←'}
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          {collapsed ? "→" : "←"}
         </Button>
 
         <nav className="space-y-2">
-          <Button variant="ghost" className="w-full justify-start">
-            <Home className="mr-2 h-4 w-4" /> {!collapsed && 'Home'}
-          </Button>
-          <Button variant="ghost" className="w-full justify-start">
-            <Kanban className="mr-2 h-4 w-4" /> {!collapsed && 'Board'}
-          </Button>
+          {navItems.map(({ label, icon: Icon, path }) => (
+            <Button
+              key={label}
+              variant="ghost"
+              className={`w-full justify-start ${
+                location.pathname === path ? "bg-muted" : ""
+              }`}
+              onClick={() => navigate(path)}
+            >
+              <Icon className="mr-2 h-4 w-4" />
+              {!collapsed && label}
+            </Button>
+          ))}
         </nav>
       </div>
     </aside>
-  )
+  );
 }
