@@ -237,7 +237,7 @@ function DraggableCard({
   <CardContent className="px-6 py-2">
     {/* Drag handle bar */}
     <div
-      className="h-4 w-full mb-2 rounded bg-muted cursor-grab"
+      className="mb-2 rounded cursor-grab"
       {...listeners}
     >-- drag this --</div>
 

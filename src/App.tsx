@@ -4,6 +4,7 @@ import { AuthForm } from "./components/AuthForm";
 import { DashboardLayout } from "./components/DashboardLayout";
 import { Home } from "./components/Home";
 import Profile from "./components/Profile";
+import { SidebarLayout } from "./components/SidebarLayout";
 import { ThemeProvider } from "./components/ui/ThemeProvider";
 import "./App.css";
 
@@ -15,18 +16,21 @@ function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Routes>
-        <Route
-          path="/home"
-          element={user ? <Home /> : <AuthForm />}
-        />
-        <Route
-          path="/dashboard"
-          element={user ? <DashboardLayout /> : <Navigate to="/dashboard" />}
-        />
-        <Route
-          path="/profile"
-          element={user ? <Profile /> : <Navigate to="/profile" />}
-        />
+        {!user && (
+          <>
+            <Route path="/home" element={<AuthForm />} />
+            <Route path="/dashboard" element={<Navigate to="/home" />} />
+            <Route path="/profile" element={<Navigate to="/home" />} />
+          </>
+        )}
+
+        {user && (
+          <Route element={<SidebarLayout />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/dashboard" element={<DashboardLayout />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+        )}
       </Routes>
     </ThemeProvider>
   );

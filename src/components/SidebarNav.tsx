@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Home, Kanban, User } from "lucide-react";
 
 export function SidebarNav() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -18,16 +18,9 @@ export function SidebarNav() {
     <aside
       className={`transition-all duration-300 ${
         collapsed ? "w-16" : "w-64"
-      } bg-background border-r`}
+      } `}
     >
-      <div className="h-full flex flex-col p-4">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          {collapsed ? "→" : "←"}
-        </Button>
+      <div className="navbar-container p-4">
 
         <nav className="space-y-2">
           {navItems.map(({ label, icon: Icon, path }) => (
